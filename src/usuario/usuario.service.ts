@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsuarioEntity } from './usuario.entity';
 import { UserCreateDto } from './dtos/userCreate.dto';
-import { v4 as uuid } from 'uuid'
+import { UserUpdateDto } from './dtos/userUpdate.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -20,5 +20,19 @@ export class UsuarioService {
         this.usuarioLista.push(entity)
 
         return entity
+    }
+
+    async atualizar(id: string, dadosAtualizados: Partial<UserUpdateDto>): Promise<UsuarioEntity> {
+        const userDb = this.usuarioLista.find(user => user.id === id);
+
+        if (!userDb) throw new Error("User not found")
+
+        Object.entries(dadosAtualizados).forEach(([key, value]) => {
+            if (key === 'id') return
+
+            userDb[key] = value
+        })
+
+        return userDb
     }
 }
