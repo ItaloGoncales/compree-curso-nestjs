@@ -15,6 +15,14 @@ export class UsuarioService {
         return this.usuarioLista.find(user => user.email === email)
     }
 
+    async findById(id: string) {
+        const userDb = this.usuarioLista.find(user => user.id === id);
+
+        if (!userDb) throw new Error("User not found")
+
+        return userDb
+    }
+
     async salvar(usuario: UserCreateDto): Promise<UsuarioEntity> {
         const entity = new UsuarioEntity(usuario)
         this.usuarioLista.push(entity)
@@ -23,9 +31,7 @@ export class UsuarioService {
     }
 
     async atualizar(id: string, dadosAtualizados: Partial<UserUpdateDto>): Promise<UsuarioEntity> {
-        const userDb = this.usuarioLista.find(user => user.id === id);
-
-        if (!userDb) throw new Error("User not found")
+        const userDb = await this.findById(id)
 
         Object.entries(dadosAtualizados).forEach(([key, value]) => {
             if (key === 'id') return
@@ -34,5 +40,11 @@ export class UsuarioService {
         })
 
         return userDb
+    }
+
+    async deletar(id: string): Promise<void> {
+        const userDb = await this.findById(id)
+
+        this.usuarioLista = this.usuarioLista.filter(user => user.id !== userDb.id)
     }
 }
