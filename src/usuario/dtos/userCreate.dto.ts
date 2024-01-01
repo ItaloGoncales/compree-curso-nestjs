@@ -1,17 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator"
-import { UniqueEmail } from "../validators/uniqueEmail.validator"
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
 
 export class UserCreateDto {
-    @IsString()
-    @IsNotEmpty()
-    nome: string
+  @IsString()
+  @IsNotEmpty()
+  nome: string
 
-    @IsEmail()
-    @IsNotEmpty()
-    @UniqueEmail()
-    email: string
+  @IsEmail()
+  @IsNotEmpty()
+  email: string
 
-    @IsString()
-    @MinLength(6)
-    senha: string
+  @IsString()
+  @MinLength(6)
+  senha: string
 }

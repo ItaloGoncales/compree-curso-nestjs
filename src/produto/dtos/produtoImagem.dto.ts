@@ -1,11 +1,10 @@
-import { IsNotEmpty, IsString, IsUrl } from "class-validator"
+import { IsNotEmpty, IsString, IsUrl } from 'class-validator'
 
 export class ProdutoImagemDto {
-    @IsUrl()
-    @IsNotEmpty()
-    url: string
+  @IsUrl()
+  url: string
 
-    @IsString()
-    @IsNotEmpty()
-    descricao: string
+  @IsString()
+  @IsNotEmpty({ message: 'Descrição da imagem não pode ser vazia' })
+  descricao: string
 }
