@@ -10,7 +10,6 @@ class ListaImagemProdutoDTO {
 
 export class ListaProdutoDTO {
   id: string
-  usuarioId: string
   nome: string
   valor: number
   quantidade: number

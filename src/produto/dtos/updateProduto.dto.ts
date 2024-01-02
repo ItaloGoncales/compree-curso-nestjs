@@ -17,9 +17,6 @@ export class UpdateProdutoDto {
   @IsUUID(undefined, { message: 'ID do produto inválido' })
   id: string
 
-  @IsUUID(undefined, { message: 'ID de usuário inválido' })
-  usuarioId: string
-
   @IsString()
   @IsNotEmpty({ message: 'Nome do produto não pode ser vazio' })
   @IsOptional()

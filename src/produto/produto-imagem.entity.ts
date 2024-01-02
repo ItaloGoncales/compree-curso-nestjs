@@ -9,9 +9,13 @@ export class ProdutoImagemEntity {
   @Column({ name: 'url', nullable: false })
   url: string
 
-  @Column({ name: 'url', length: 100, nullable: false })
+  @Column({ name: 'descricao', length: 100, nullable: false })
   descricao: string
 
-  @ManyToOne(() => ProdutoEntity, (produto) => produto.imagens)
+  @ManyToOne(() => ProdutoEntity, (produto) => produto.imagens, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   produto: ProdutoEntity
 }
