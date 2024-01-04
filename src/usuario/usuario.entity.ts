@@ -1,4 +1,13 @@
-import { Entity, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+  PrimaryGeneratedColumn,
+  OneToMany,
+} from 'typeorm'
+import { PedidoEntity } from '../pedido/pedido.entity'
 
 @Entity({ name: 'usuarios' })
 export class UsuarioEntity {
@@ -22,4 +31,7 @@ export class UsuarioEntity {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: string
+
+  @OneToMany(() => PedidoEntity, (pedido) => pedido.usuario)
+  pedidos: PedidoEntity[]
 }
