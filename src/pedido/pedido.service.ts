@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { PedidoEntity } from './pedido.entity'
 import { In, Repository } from 'typeorm'
@@ -20,6 +20,22 @@ export class PedidoService {
     private readonly produtoRepository: Repository<ProdutoEntity>,
   ) {}
 
+  private validatePedidos(pedido: CriaPedidoDTO, produtos: ProdutoEntity[]): void {
+    pedido.itensPedido.forEach((item) => {
+      const produto = produtos.find((produto) => produto.id === item.produtoId)
+
+      if (!produto) {
+        throw new NotFoundException(`Produto '${item.produtoId}' não encontrado`)
+      }
+
+      if (item.quantidade > produto.quantidadeDisponivel) {
+        throw new BadRequestException(
+          `A quantidade solicitada (${item.quantidade}) é maior do que a disponível (${produto.quantidadeDisponivel}) para o produto ${produto.nome}`,
+        )
+      }
+    })
+  }
+
   async pedidos(usuarioId: string): Promise<PedidoEntity[]> {
     return await this.pedidoRepository.find({
       where: {
@@ -38,11 +54,17 @@ export class PedidoService {
       id: usuarioId,
     })
 
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado')
+    }
+
     const produtoIds = dadosPedido.itensPedido.map((item) => item.produtoId)
 
     const produtosRelacionados = await this.produtoRepository.findBy({
       id: In(produtoIds),
     })
+
+    this.validatePedidos(dadosPedido, produtosRelacionados)
 
     const pedidoEntity = new PedidoEntity()
 
@@ -52,9 +74,9 @@ export class PedidoService {
       const produto = produtosRelacionados.find((produto) => produto.id === item.produtoId)
 
       const itemPedidoEntity = new ItemPedidoEntity()
-      itemPedidoEntity.precoVenda = produto.valor
+      itemPedidoEntity.precoVenda = produto!.valor
       itemPedidoEntity.quantidade = item.quantidade
-      itemPedidoEntity.produto = produto
+      itemPedidoEntity.produto = produto!
       itemPedidoEntity.produto.quantidadeDisponivel -= item.quantidade
 
       return itemPedidoEntity
@@ -70,6 +92,10 @@ export class PedidoService {
 
   async atualizaPedido(pedidoId: string, dadosPedido: AtualizaPedidoDto): Promise<PedidoEntity> {
     const pedidoEntity = await this.pedidoRepository.findOneBy({ id: pedidoId })
+
+    if (!pedidoEntity) {
+      throw new NotFoundException(`Pedido não encontrado`)
+    }
 
     Object.assign(pedidoEntity, dadosPedido)
 
