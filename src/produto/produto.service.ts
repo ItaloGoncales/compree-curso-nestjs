@@ -26,13 +26,7 @@ export class ProdutoService {
   async salvar(produto: ProdutoCreateDto): Promise<ProdutoEntity> {
     const produtoEntity = new ProdutoEntity()
 
-    produtoEntity.nome = produto.nome
-    produtoEntity.valor = produto.valor
-    produtoEntity.quantidadeDisponivel = produto.quantidadeDisponivel
-    produtoEntity.descricao = produto.descricao
-    produtoEntity.categoria = produto.categoria
-    produtoEntity.caracteristicas = produto.caracteristicas
-    produtoEntity.imagens = produto.imagens
+    Object.assign(produtoEntity, produto as ProdutoEntity)
 
     return await this.produtoRepository.save(produtoEntity)
   }
@@ -54,7 +48,7 @@ export class ProdutoService {
       throw new NotFoundException('O produto não foi encontrado')
     }
 
-    Object.assign(entity, dadosProduto)
+    Object.assign(entity, dadosProduto as ProdutoEntity)
 
     return await this.produtoRepository.save(entity)
   }

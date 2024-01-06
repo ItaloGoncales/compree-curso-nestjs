@@ -38,17 +38,17 @@ export class UsuarioService {
   }
 
   async salvar(usuario: UserCreateDto): Promise<UsuarioEntity> {
-    return await this.usuarioRepository.save(usuario)
+    const usuarioEntity = new UsuarioEntity()
+
+    Object.assign(usuarioEntity, usuario as UsuarioEntity)
+
+    return await this.usuarioRepository.save(usuarioEntity)
   }
 
   async atualizar(id: string, dadosAtualizados: Partial<UserUpdateDto>): Promise<UsuarioEntity> {
     const userDb = await this.findById(id)
 
-    Object.entries(dadosAtualizados).forEach(([key, value]) => {
-      if (key === 'id') return
-
-      userDb[key] = value
-    })
+    Object.assign(userDb, dadosAtualizados as UserUpdateDto)
 
     await this.usuarioRepository.update(id, userDb)
 

@@ -97,7 +97,7 @@ export class PedidoService {
       throw new NotFoundException(`Pedido não encontrado`)
     }
 
-    Object.assign(pedidoEntity, dadosPedido)
+    Object.assign(pedidoEntity, dadosPedido as PedidoEntity)
 
     return await this.pedidoRepository.save(pedidoEntity)
   }
