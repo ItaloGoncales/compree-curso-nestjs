@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from '@nestjs/common'
 import { ProdutoService } from './produto.service'
 import { UpdateProdutoDto } from './dtos/updateProduto.dto'
 import { ProdutoCreateDto } from './dtos/createProduto.dto'
+import { ProdutoEntity } from './produto.entity'
+import { CacheInterceptor } from '@nestjs/cache-manager'
 
 @Controller('produto')
 export class ProdutoController {
@@ -19,6 +21,12 @@ export class ProdutoController {
   @Get()
   async produtos(): Promise<any[]> {
     return await this.produtoService.produtos()
+  }
+
+  @Get(':id')
+  @UseInterceptors(CacheInterceptor)
+  async produto(@Param('id') produtoId: string): Promise<ProdutoEntity> {
+    return await this.produtoService.produto(produtoId)
   }
 
   @Put('/:id')

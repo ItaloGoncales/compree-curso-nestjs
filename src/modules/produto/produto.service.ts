@@ -17,8 +17,6 @@ export class ProdutoService {
     private readonly produtoImagemRepository: Repository<ProdutoImagemEntity>,
   ) {}
 
-  private produtosList: any[]
-
   async produtos(): Promise<ProdutoEntity[]> {
     return await this.produtoRepository.find()
   }
@@ -31,8 +29,8 @@ export class ProdutoService {
     return await this.produtoRepository.save(produtoEntity)
   }
 
-  private buscaPorId(id: string) {
-    const possivelProduto = this.produtosList.find((produto) => produto.id === id)
+  async produto(id: string): Promise<ProdutoEntity> {
+    const possivelProduto = await this.produtoRepository.findOneBy({ id })
 
     if (!possivelProduto) {
       throw new Error('Produto não existe')
@@ -54,8 +52,10 @@ export class ProdutoService {
   }
 
   async remove(id: string) {
-    const produtoRemovido = this.buscaPorId(id)
-    this.produtosList = this.produtosList.filter((produto) => produto.id !== id)
-    return produtoRemovido
+    const produtoRemovido = this.produto(id)
+
+    if (!produtoRemovido) throw new NotFoundException(`Produto ${id} não encontrado`)
+
+    return await this.produtoRepository.delete({ id })
   }
 }
