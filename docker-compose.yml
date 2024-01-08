@@ -1,4 +1,4 @@
-version: "3.5"
+version: '3.5'
 
 services:
   postgres:
@@ -10,23 +10,33 @@ services:
     volumes:
       - postgres:/data/postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
       - postgres
     restart: unless-stopped
+
   pgadmin:
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${DB_ADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "8081:80"
+      - '8081:80'
     depends_on:
       - postgres
     networks:
       - postgres
+
+  redis:
+    container_name: redis-cache
+    image: redis:7.0-alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
 networks:
   postgres:
     driver: bridge
 volumes:
   postgres:
+  redis:

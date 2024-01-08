@@ -19,6 +19,7 @@ export class ProdutoController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async produtos(): Promise<any[]> {
     return await this.produtoService.produtos()
   }
