@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator'
+import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator'
 
 export class UserCreateDto {
   @IsString()
@@ -10,6 +10,9 @@ export class UserCreateDto {
   email: string
 
   @IsString()
-  @MinLength(6)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W+)(.{6,30})$/, {
+    message:
+      'A senha deve conter pelo menos uma letra minúscula, uma letra maiúscula, um dígito, um caractere especial e ter entre 8 e 30 caracteres',
+  })
   senha: string
 }

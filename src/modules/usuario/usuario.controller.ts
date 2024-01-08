@@ -3,6 +3,7 @@ import { UsuarioService } from './usuario.service'
 import { UserCreateDto } from './dtos/userCreate.dto'
 import { UserListDTO } from './dtos/userList.dto'
 import { UserUpdateDto } from './dtos/userUpdate.dto'
+import { HashPasswordPipe } from '../../resources/pipes/hash-password.pipe'
 
 @Controller('usuarios')
 export class UsuarioController {
@@ -14,8 +15,12 @@ export class UsuarioController {
   }
 
   @Post()
-  async criaUsuario(@Body() dados: UserCreateDto): Promise<UserListDTO> {
-    const userEntity = await this.usuarioService.salvar(dados)
+  async criaUsuario(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @Body() { senha, ...dados }: UserCreateDto,
+    @Body('senha', HashPasswordPipe) senhaHash: string,
+  ): Promise<UserListDTO> {
+    const userEntity = await this.usuarioService.salvar({ ...dados, senha: senhaHash })
     return new UserListDTO(userEntity.id, userEntity.nome)
   }
 
